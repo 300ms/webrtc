@@ -10,6 +10,6 @@ const createRoom = (props) => {
   return (
     <button onClick={create}>Create Room</button>
   );
-}
+};
 
 export default createRoom;
