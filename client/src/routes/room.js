@@ -45,8 +45,8 @@ const Room = (props) => {
   const callUser = (userID) => {
     // Create peer object by createPeer method
     peerRef.current = createPeer(userID);
-    // Attach each stream track objects(video and audio) to the peer object. We do this to be able to send our tracks to the other user
-    userStream.current.getTracks().forEach(track => peerRef.current.addTrack(track, userStream.current));
+    // Attach each stream track objects(video and audio) to the senders. We do this to be able to send our tracks to the other user
+    userStream.current.getTracks().forEach(track => senders.current.push(peerRef.current.addTrack(track, userStream.current)));
   };
 
   // Define createPeer function with parameter of user id who we are trying to connect(userID is the id of user who is receiving the call)
@@ -174,10 +174,25 @@ const Room = (props) => {
     partnerVideo.current.srcObject = e.streams[0];
   }
 
+  const shareScreen = () => {
+    navigator.mediaDevices.getDisplayMedia({ cursor: true }).then((stream) => {
+      // Get the screen track of user
+      const screenTrack = stream.getTracks()[0];
+      // Get the video track and swap it with the screen track
+      senders.current.find(sender => sender.track.kind === 'video').replaceTrack(screenTrack);
+      // When screen sharing is ended,
+      screenTrack.onended = () => {
+        // Get the screen track and swap it with the video track
+        senders.current.find(sender => sender.track.kind === 'video').replaceTrack(userStream.current.getTracks()[1]);
+      }
+    });
+  };
+
   return (
     <div>
-      <video autoPlay ref={userVideo} />
-      <video autoPlay ref={partnerVideo} />
+      <video controls autoPlay ref={userVideo} style={{width: 500, height:500}}/>
+      <video controls autoPlay ref={partnerVideo} style={{width: 500, height:500}}/>
+      <button onClick={shareScreen}>Share screen</button>
     </div>
   );
 };
