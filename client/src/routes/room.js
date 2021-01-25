@@ -190,7 +190,7 @@ const Room = (props) => {
 
   return (
     <div>
-      <video controls autoPlay ref={userVideo} style={{width: 500, height:500}}/>
+      <video controls autoPlay muted ref={userVideo} style={{width: 500, height:500}}/>
       <video controls autoPlay ref={partnerVideo} style={{width: 500, height:500}}/>
       <button onClick={shareScreen}>Share screen</button>
     </div>
